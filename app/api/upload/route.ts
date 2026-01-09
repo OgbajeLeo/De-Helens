@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { writeFile } from 'fs/promises';
+import { writeFile, mkdir } from 'fs/promises';
 import { join } from 'path';
+import { existsSync } from 'fs';
 
 export async function POST(request: NextRequest) {
   try {
@@ -33,7 +34,7 @@ export async function POST(request: NextRequest) {
     // Generate unique filename
     const timestamp = Date.now();
     const randomString = Math.random().toString(36).substring(2, 15);
-    const extension = file.name.split('.').pop();
+    const extension = file.name.split('.').pop()?.toLowerCase() || 'jpg';
     const filename = `${timestamp}-${randomString}.${extension}`;
 
     // Save to public/uploads directory
@@ -41,9 +42,8 @@ export async function POST(request: NextRequest) {
     const filepath = join(uploadsDir, filename);
 
     // Create directory if it doesn't exist
-    const fs = require('fs');
-    if (!fs.existsSync(uploadsDir)) {
-      fs.mkdirSync(uploadsDir, { recursive: true });
+    if (!existsSync(uploadsDir)) {
+      await mkdir(uploadsDir, { recursive: true });
     }
 
     await writeFile(filepath, buffer);

@@ -13,12 +13,11 @@ export default function AdminDashboard() {
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
-  const [editingItem, setEditingItem] = useState<MenuItem | null>(null);
   const [formData, setFormData] = useState({
     name: "",
     description: "",
     price: "",
-    category: "meal" as "meal" | "drink",
+    category: "food" as "shawama" | "drinks" | "food" | "protein",
     image: "",
     available: true,
   });
@@ -55,38 +54,21 @@ export default function AdminDashboard() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      if (editingItem && editingItem._id) {
-        // Update existing item
-        const response = await fetch(`/api/menu/${editingItem._id}`, {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
-        if (response.ok) {
-          toast.success("Menu item updated successfully!");
-          fetchMenuItems();
-          resetForm();
-        } else {
-          const error = await response.json();
-          toast.error(error.error || "Failed to update item");
-        }
+      // Create new item
+      const response = await fetch("/api/menu", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+      if (response.ok) {
+        toast.success(
+          "Menu item created successfully! It will appear on your website."
+        );
+        fetchMenuItems();
+        resetForm();
       } else {
-        // Create new item
-        const response = await fetch("/api/menu", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(formData),
-        });
-        if (response.ok) {
-          toast.success(
-            "Menu item created successfully! It will appear on your website."
-          );
-          fetchMenuItems();
-          resetForm();
-        } else {
-          const error = await response.json();
-          toast.error(error.error || "Failed to create item");
-        }
+        const error = await response.json();
+        toast.error(error.error || "Failed to create item");
       }
     } catch (error: any) {
       console.error("Error saving menu item:", error);
@@ -115,43 +97,43 @@ export default function AdminDashboard() {
     setUploadingImage(true);
 
     try {
-      const formData = new FormData();
-      formData.append("file", file);
+      const uploadFormData = new FormData();
+      uploadFormData.append("file", file);
 
       const response = await fetch("/api/upload", {
         method: "POST",
-        body: formData,
+        body: uploadFormData,
       });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || "Upload failed");
+      }
 
       const data = await response.json();
 
-      if (response.ok && data.url) {
+      if (data.url) {
         setFormData((prev) => ({ ...prev, image: data.url }));
         setImagePreview(data.url);
         toast.success("Image uploaded successfully!");
       } else {
-        toast.error(data.error || "Failed to upload image");
+        throw new Error("No URL returned from server");
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error uploading image:", error);
-      toast.error("Failed to upload image");
+      toast.error(error.message || "Failed to upload image. Please try again.");
     } finally {
       setUploadingImage(false);
+      // Reset file input
+      const fileInput = e.target;
+      if (fileInput) {
+        fileInput.value = "";
+      }
     }
   };
 
   const handleEdit = (item: MenuItem) => {
-    setEditingItem(item);
-    setFormData({
-      name: item.name,
-      description: item.description,
-      price: item.price.toString(),
-      category: item.category,
-      image: item.image || "",
-      available: item.available,
-    });
-    setImagePreview(item.image || "");
-    setShowForm(true);
+    router.push(`/admin/edit/${item._id}`);
   };
 
   const handleDelete = async (id: string | undefined) => {
@@ -184,17 +166,18 @@ export default function AdminDashboard() {
       name: "",
       description: "",
       price: "",
-      category: "meal",
+      category: "food",
       image: "",
       available: true,
     });
     setImagePreview("");
-    setEditingItem(null);
     setShowForm(false);
   };
 
-  const meals = menuItems.filter((item) => item.category === "meal");
-  const drinks = menuItems.filter((item) => item.category === "drink");
+  const shawama = menuItems.filter((item) => item.category === "shawama");
+  const drinks = menuItems.filter((item) => item.category === "drinks");
+  const food = menuItems.filter((item) => item.category === "food");
+  const protein = menuItems.filter((item) => item.category === "protein");
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -229,7 +212,7 @@ export default function AdminDashboard() {
         {showForm && (
           <div className="bg-white rounded-lg shadow-md p-6 mb-8">
             <h3 className="text-2xl font-bold mb-4 text-gray-800">
-              {editingItem ? "Edit Menu Item" : "Add New Menu Item"}
+              Add New Menu Item
             </h3>
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -249,16 +232,17 @@ export default function AdminDashboard() {
                 </div>
                 <div>
                   <label className="block text-sm font-semibold text-gray-700 mb-2">
-                    Price
+                    Price (₦)
                   </label>
                   <input
                     type="number"
                     step="0.01"
+                    min="0"
                     value={formData.price}
                     onChange={(e) =>
                       setFormData({ ...formData, price: e.target.value })
                     }
-                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22]"
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent"
                     required
                   />
                 </div>
@@ -287,12 +271,15 @@ export default function AdminDashboard() {
                     onChange={(e) =>
                       setFormData({
                         ...formData,
-                        category: e.target.value as "meal" | "drink",
+                        category: e.target.value as "shawama" | "drinks" | "food" | "protein",
                       })
                     }
                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22]"
                   >
-                    <option value="meal">Meal</option>
+                    <option value="shawama">Shawama</option>
+                    <option value="drinks">Drinks</option>
+                    <option value="food">Food</option>
+                    <option value="protein">Protein</option>
                     <option value="drink">Drink</option>
                   </select>
                 </div>
@@ -311,11 +298,11 @@ export default function AdminDashboard() {
                         accept="image/*"
                         onChange={handleImageUpload}
                         disabled={uploadingImage}
-                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22] text-sm"
+                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                       />
                       {uploadingImage && (
                         <p className="text-xs text-gray-500 mt-1">
-                          Uploading...
+                          Uploading image...
                         </p>
                       )}
                     </div>
@@ -349,7 +336,7 @@ export default function AdminDashboard() {
                         <img
                           src={imagePreview || formData.image}
                           alt="Preview"
-                          className="w-full h-32 object-cover rounded border border-gray-300"
+                          className="w-full h-48 object-cover rounded border border-gray-300"
                           onError={(e) => {
                             (e.target as HTMLImageElement).style.display =
                               "none";
@@ -382,7 +369,7 @@ export default function AdminDashboard() {
                   type="submit"
                   className="bg-[#228B22] text-white px-6 py-2 rounded-lg hover:bg-[#1a6b1a] transition"
                 >
-                  {editingItem ? "Update" : "Create"}
+                  Create
                 </button>
                 <button
                   type="button"
@@ -402,10 +389,10 @@ export default function AdminDashboard() {
           <div className="space-y-8">
             <div>
               <h3 className="text-2xl font-bold mb-4 text-gray-800">
-                Meals ({meals.length})
+                Shawama ({shawama.length})
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {meals.map((item) => (
+                {shawama.map((item) => (
                   <div
                     key={item._id}
                     className="bg-white rounded-lg shadow-md p-4"
@@ -451,6 +438,96 @@ export default function AdminDashboard() {
               </h3>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {drinks.map((item) => (
+                  <div
+                    key={item._id}
+                    className="bg-white rounded-lg shadow-md p-4"
+                  >
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-32 object-cover rounded mb-2"
+                      />
+                    )}
+                    <h4 className="font-semibold text-lg mb-1">{item.name}</h4>
+                    <p className="text-gray-600 text-sm mb-2">
+                      {item.description}
+                    </p>
+                    <p className="text-[#228B22] font-bold mb-3">
+                      ₦{item.price.toLocaleString()}
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="flex-1 flex items-center justify-center gap-2 bg-[#FFD700] text-gray-800 px-3 py-2 rounded hover:bg-[#FFC700] transition"
+                      >
+                        <FiEdit />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item._id!)}
+                        className="flex-1 flex items-center justify-center gap-2 bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition"
+                      >
+                        <FiTrash2 />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-2xl font-bold mb-4 text-gray-800">
+                Food ({food.length})
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {food.map((item) => (
+                  <div
+                    key={item._id}
+                    className="bg-white rounded-lg shadow-md p-4"
+                  >
+                    {item.image && (
+                      <img
+                        src={item.image}
+                        alt={item.name}
+                        className="w-full h-32 object-cover rounded mb-2"
+                      />
+                    )}
+                    <h4 className="font-semibold text-lg mb-1">{item.name}</h4>
+                    <p className="text-gray-600 text-sm mb-2">
+                      {item.description}
+                    </p>
+                    <p className="text-[#228B22] font-bold mb-3">
+                      ₦{item.price.toLocaleString()}
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        onClick={() => handleEdit(item)}
+                        className="flex-1 flex items-center justify-center gap-2 bg-[#FFD700] text-gray-800 px-3 py-2 rounded hover:bg-[#FFC700] transition"
+                      >
+                        <FiEdit />
+                        Edit
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item._id!)}
+                        className="flex-1 flex items-center justify-center gap-2 bg-red-600 text-white px-3 py-2 rounded hover:bg-red-700 transition"
+                      >
+                        <FiTrash2 />
+                        Delete
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <h3 className="text-2xl font-bold mb-4 text-gray-800">
+                Protein ({protein.length})
+              </h3>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {protein.map((item) => (
                   <div
                     key={item._id}
                     className="bg-white rounded-lg shadow-md p-4"

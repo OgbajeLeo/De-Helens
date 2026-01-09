@@ -50,10 +50,21 @@ export default function CartPage() {
                   key={item._id}
                   className="flex items-center gap-4 py-4 border-b border-gray-200 last:border-0"
                 >
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-24 h-24 object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="w-24 h-24 bg-gray-200 rounded-lg flex items-center justify-center text-3xl">
+                      🍽️
+                    </div>
+                  )}
                   <div className="flex-1">
                     <h3 className="text-xl font-semibold text-gray-800">{item.name}</h3>
                     <p className="text-gray-600 text-sm">{item.description}</p>
-                    <p className="text-lg font-bold text-[#228B22] mt-2">
+                    <p className="text-lg font-bold text-[#22c55e] mt-2">
                       ₦{item.price.toLocaleString()}
                     </p>
                   </div>

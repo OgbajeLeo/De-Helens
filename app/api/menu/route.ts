@@ -48,7 +48,7 @@ export async function POST(request: NextRequest) {
       name,
       description,
       price: parseFloat(price),
-      category: category as 'meal' | 'drink',
+      category: category as 'shawama' | 'drinks' | 'food' | 'protein',
       image: image || '',
       available: available !== false,
       createdAt: new Date(),

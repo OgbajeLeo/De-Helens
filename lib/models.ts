@@ -3,7 +3,7 @@ export interface MenuItem {
   name: string;
   description: string;
   price: number;
-  category: 'meal' | 'drink';
+  category: 'shawama' | 'drinks' | 'food' | 'protein';
   image?: string;
   available: boolean;
   createdAt?: Date;

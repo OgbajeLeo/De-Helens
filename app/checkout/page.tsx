@@ -188,11 +188,23 @@ export default function CheckoutPage() {
             <h2 className="text-2xl font-bold mb-6 text-gray-800">Order Summary</h2>
             <div className="space-y-3 mb-4">
               {cart.map((item) => (
-                <div key={item._id} className="flex justify-between text-gray-700">
-                  <span>
-                    {item.name} x{item.quantity}
-                  </span>
-                  <span className="font-semibold">₦{(item.price * item.quantity).toLocaleString()}</span>
+                <div key={item._id} className="flex items-center gap-3 pb-3 border-b border-gray-200 last:border-0">
+                  {item.image ? (
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      className="w-16 h-16 object-cover rounded-lg"
+                    />
+                  ) : (
+                    <div className="w-16 h-16 bg-gray-200 rounded-lg flex items-center justify-center text-2xl">
+                      🍽️
+                    </div>
+                  )}
+                  <div className="flex-1">
+                    <p className="font-semibold text-gray-800">{item.name}</p>
+                    <p className="text-sm text-gray-600">x{item.quantity}</p>
+                  </div>
+                  <span className="font-semibold text-gray-800">₦{(item.price * item.quantity).toLocaleString()}</span>
                 </div>
               ))}
             </div>
