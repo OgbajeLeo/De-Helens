@@ -5,8 +5,8 @@ import { useRouter } from "next/navigation";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import MenuSection from "@/components/MenuSection";
-import { MenuItem } from "@/lib/models";
 import { useCart } from "@/context/CartContext";
+import { useMenuItems } from "@/lib/hooks/useMenuItems";
 import { motion } from "framer-motion";
 import {
   FiPlay,
@@ -15,44 +15,34 @@ import {
   FiStar,
   FiPlus,
 } from "react-icons/fi";
-import {
-  FiCoffee,
-  FiShoppingBag,
-  FiTruck,
-  FiGift,
-  FiFacebook,
-  FiInstagram,
-  FiTwitter,
-  FiYoutube,
-} from "react-icons/fi";
+import { FiCoffee, FiShoppingBag, FiTruck, FiGift } from "react-icons/fi";
 import toast from "react-hot-toast";
+import Image from "next/image";
+import chef from "./assets/chef.jpg";
+import slide1 from "./assets/slide1.jpg";
+import slide2 from "./assets/slide2.jpg";
+import slide3 from "./assets/slide3.jpg";
 
 export default function Home() {
   const router = useRouter();
   const { addToCart, cart } = useCart();
-  const [allItems, setAllItems] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data: allItems = [], isLoading: loading } = useMenuItems();
   const [currentDishIndex, setCurrentDishIndex] = useState(0);
+  const [currentSlide, setCurrentSlide] = useState(2);
+
+  const slides = [slide3, slide2, slide1];
 
   const isItemInCart = (itemId?: string) => {
     return cart.some((cartItem) => cartItem._id === itemId);
   };
 
   useEffect(() => {
-    fetchMenu();
-  }, []);
+    const interval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % slides.length);
+    }, 7000);
 
-  const fetchMenu = async () => {
-    try {
-      const response = await fetch("/api/menu");
-      const data = await response.json();
-      setAllItems(data);
-    } catch (error) {
-      console.error("Error fetching menu:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    return () => clearInterval(interval);
+  }, [slides.length]);
 
   const featuredDishes = allItems.slice(0, 6);
   const specialDishes = featuredDishes.slice(
@@ -99,11 +89,11 @@ export default function Home() {
   ];
 
   const services = [
-    {
-      icon: <FiCoffee className="text-3xl" />,
-      title: "CATERING",
-      description: "Professional catering services for your events",
-    },
+    // {
+    //   icon: <FiCoffee className="text-3xl" />,
+    //   title: "CATERING",
+    //   description: "Professional catering services for your events",
+    // },
     {
       icon: <FiTruck className="text-3xl" />,
       title: "FAST DELIVERY",
@@ -126,21 +116,50 @@ export default function Home() {
       <Header />
       <main className="grow">
         {/* Hero Section */}
-        <section id="home" className="py-20 bg-white overflow-hidden">
-          <div className="container mx-auto px-4">
-            <div className="grid lg:grid-cols-2 gap-12 items-center">
-              {/* Left side - Text content */}
+        <section
+          id="home"
+          className="relative h-[600px] md:h-[700px] overflow-hidden"
+        >
+          {/* Background Images with Transition */}
+          <div className="absolute inset-0">
+            {slides.map((slide, index) => (
               <motion.div
-                initial={{ x: -100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.6 }}
-                className="space-y-6"
+                key={index}
+                initial={{ opacity: 0 }}
+                animate={{
+                  opacity: currentSlide === index ? 1 : 0,
+                  scale: currentSlide === index ? 1 : 1.1,
+                }}
+                transition={{ duration: 1, ease: "easeInOut" }}
+                className="absolute inset-0"
+              >
+                <Image
+                  src={slide}
+                  alt={`Slide ${index + 1}`}
+                  fill
+                  className="object-cover"
+                  priority={index === 0}
+                />
+                {/* Dark overlay for better text readability */}
+                <div className="absolute inset-0 bg-black/60"></div>
+              </motion.div>
+            ))}
+          </div>
+
+          {/* Content */}
+          <div className="relative z-10 h-full flex items-center">
+            <div className="container mx-auto px-4">
+              <motion.div
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="max-w-2xl space-y-6 text-center mx-auto"
               >
                 <motion.h1
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.2, duration: 0.6 }}
-                  className="text-5xl md:text-6xl font-bold text-gray-900 leading-tight"
+                  className="text-5xl md:text-6xl lg:text-7xl font-bold text-white leading-tight"
                 >
                   Dive into Delights Of{" "}
                   <span className="text-[#22c55e]">Delectable Food</span>
@@ -149,7 +168,7 @@ export default function Home() {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.4, duration: 0.6 }}
-                  className="text-lg text-gray-600 leading-relaxed"
+                  className="text-lg md:text-xl text-white/90 leading-relaxed"
                 >
                   Where Each Plate Weaves a Story of Culinary Mastery and
                   Passionate Craftsmanship.
@@ -158,95 +177,35 @@ export default function Home() {
                   initial={{ y: 20, opacity: 0 }}
                   animate={{ y: 0, opacity: 1 }}
                   transition={{ delay: 0.6, duration: 0.6 }}
-                  className="flex gap-4"
+                  className="flex gap-4 justify-center "
                 >
                   <motion.a
                     href="#menu"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.95 }}
-                    className="bg-[#22c55e] text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-[#16a34a] transition"
+                    className="bg-[#22c55e] text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-[#16a34a] transition shadow-lg"
                   >
                     Order Now
                   </motion.a>
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="bg-white text-gray-800 px-8 py-4 rounded-lg text-lg font-semibold border-2 border-gray-300 hover:border-[#22c55e] transition flex items-center gap-2"
-                  >
-                    <FiPlay className="text-xl" />
-                    Watch Video
-                  </motion.button>
-                </motion.div>
-              </motion.div>
-
-              {/* Right side - Hero Image */}
-              <motion.div
-                initial={{ x: 100, opacity: 0 }}
-                animate={{ x: 0, opacity: 1 }}
-                transition={{ duration: 0.6 }}
-                className="relative"
-              >
-                <div className="relative z-10">
-                  <div className="w-full h-[500px] bg-gradient-to-br from-[#22c55e] to-[#16a34a] rounded-full opacity-20 absolute -z-10 -top-20 -right-20 blur-3xl"></div>
-                  <div className="bg-gray-200 rounded-2xl overflow-hidden h-[500px] flex items-center justify-center">
-                    <div className="text-6xl">👩‍🍳</div>
-                  </div>
-                </div>
-
-                {/* Overlay Cards */}
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 0.8, duration: 0.5, type: "spring" }}
-                  className="absolute top-10 right-10 bg-white rounded-lg shadow-xl p-3 flex items-center gap-3"
-                >
-                  <div className="text-2xl">🔥</div>
-                  <span className="font-semibold text-red-600">
-                    Hot spicy Food
-                  </span>
-                </motion.div>
-
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 1, duration: 0.5, type: "spring" }}
-                  className="absolute bottom-20 right-10 bg-white rounded-lg shadow-xl p-4 w-48"
-                >
-                  <div className="w-full h-24 bg-gray-200 rounded mb-2"></div>
-                  <h4 className="font-semibold text-sm mb-1">Spicy noodles</h4>
-                  <div className="flex items-center gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <FiStar
-                        key={i}
-                        className="text-yellow-400 fill-yellow-400 text-xs"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-[#22c55e] font-bold">₦18,000</p>
-                </motion.div>
-
-                <motion.div
-                  initial={{ scale: 0, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={{ delay: 1.2, duration: 0.5, type: "spring" }}
-                  className="absolute bottom-10 left-10 bg-white rounded-lg shadow-xl p-4 w-48"
-                >
-                  <div className="w-full h-24 bg-gray-200 rounded mb-2"></div>
-                  <h4 className="font-semibold text-sm mb-1">
-                    Vegetarian salad
-                  </h4>
-                  <div className="flex items-center gap-1 mb-2">
-                    {[...Array(5)].map((_, i) => (
-                      <FiStar
-                        key={i}
-                        className="text-yellow-400 fill-yellow-400 text-xs"
-                      />
-                    ))}
-                  </div>
-                  <p className="text-[#22c55e] font-bold">₦23,000</p>
                 </motion.div>
               </motion.div>
             </div>
+          </div>
+
+          {/* Slide Indicators */}
+          <div className="absolute bottom-6 left-1/2 transform -translate-x-1/2 z-10 flex gap-2">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => setCurrentSlide(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  currentSlide === index
+                    ? "w-8 bg-[#22c55e]"
+                    : "w-2 bg-white/50 hover:bg-white/75"
+                }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </section>
 
@@ -263,7 +222,7 @@ export default function Home() {
               <p className="text-red-600 text-sm font-semibold mb-2">
                 CUSTOMER FAVORITES
               </p>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
+              <h2 className="text-2xl md:text-5xl font-bold text-gray-900">
                 Popular Categories
               </h2>
             </motion.div>
@@ -307,7 +266,7 @@ export default function Home() {
                 <p className="text-red-600 text-sm font-semibold mb-2">
                   SPECIAL DISHES
                 </p>
-                <h2 className="text-4xl md:text-5xl font-bold text-gray-900">
+                <h2 className="text-2xl md:text-5xl font-bold text-gray-900">
                   Standout Dishes From Our Menu
                 </h2>
               </motion.div>
@@ -432,8 +391,8 @@ export default function Home() {
                 className="relative"
               >
                 <div className="w-full h-[400px] bg-gradient-to-br from-[#22c55e] to-[#16a34a] rounded-full opacity-20 absolute -z-10 -bottom-20 -left-20 blur-3xl"></div>
-                <div className="bg-gray-200 rounded-2xl overflow-hidden h-[400px] flex items-center justify-center">
-                  <div className="text-6xl">👨‍🍳</div>
+                <div className="rounded-2xl overflow-hidden h-[450px] flex items-center justify-center">
+                  <Image src={chef} alt="Chef" width={400} height={400} />
                 </div>
                 <motion.div
                   initial={{ scale: 0, opacity: 0 }}
@@ -459,24 +418,17 @@ export default function Home() {
                   <p className="text-red-600 text-sm font-semibold mb-2">
                     TESTIMONIALS
                   </p>
-                  <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+                  <h2 className="text-2xl md:text-5xl font-bold text-gray-900 mb-6">
                     What Our Customers Say About Us
                   </h2>
                 </div>
                 <p className="text-lg text-gray-600 leading-relaxed">
-                  &quot;I had the pleasure of dining at Foodi last night, and
-                  I&apos;m still raving about the experience! The attention to
-                  detail in presentation and service was impeccable.&quot;
+                  &quot;I had the pleasure of dining at De Helen's Taste last
+                  night, and I&apos;m still raving about the experience! The
+                  attention to detail in presentation and service was
+                  impeccable.&quot;
                 </p>
                 <div className="flex items-center gap-4">
-                  <div className="flex -space-x-2">
-                    {[...Array(3)].map((_, i) => (
-                      <div
-                        key={i}
-                        className="w-12 h-12 rounded-full bg-gray-300 border-2 border-white"
-                      ></div>
-                    ))}
-                  </div>
                   <div>
                     <p className="font-semibold text-gray-900">
                       Customer Feedback
@@ -485,7 +437,7 @@ export default function Home() {
                       <FiStar className="text-yellow-400 fill-yellow-400" />
                       <span className="font-semibold">4.9</span>
                       <span className="text-gray-600 text-sm">
-                        (18.6k Reviews)
+                        (10.6k Reviews)
                       </span>
                     </div>
                   </div>
@@ -508,7 +460,7 @@ export default function Home() {
               <p className="text-red-600 text-sm font-semibold mb-2">
                 OUR STORY & SERVICES
               </p>
-              <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
+              <h2 className="text-2xl md:text-5xl font-bold text-gray-900 mb-6">
                 Our Culinary Journey And Services
               </h2>
               <p className="text-lg text-gray-600 leading-relaxed mb-8">
@@ -528,7 +480,7 @@ export default function Home() {
               </motion.a>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               {services.map((service, index) => (
                 <motion.div
                   key={service.title}
@@ -553,7 +505,7 @@ export default function Home() {
         </section>
 
         {/* Menu Sections */}
-        {!loading && <MenuSection title="Our Menu" items={allItems} />}
+        <MenuSection title="Our Menu" />
       </main>
       <Footer />
     </div>

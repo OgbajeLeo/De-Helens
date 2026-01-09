@@ -50,8 +50,7 @@ export default function CheckoutPage() {
         throw new Error('Failed to create order');
       }
 
-      // Create WhatsApp message
-      const ownerPhone = process.env.NEXT_PUBLIC_OWNER_WHATSAPP_NUMBER || '1234567890';
+      const ownerPhone = "+2348106752355";
       const orderItems = cart
         .map((item) => `${item.name} x${item.quantity} - ₦${(item.price * item.quantity).toLocaleString()}`)
         .join('\n');

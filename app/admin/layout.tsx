@@ -1,8 +1,9 @@
-'use client';
+"use client";
 
-import { useEffect, useState } from 'react';
-import { useRouter, usePathname } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+import { useEffect, useState } from "react";
+import { useRouter, usePathname } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
+import AdminSidebar from "@/components/AdminSidebar";
 
 export default function AdminLayout({
   children,
@@ -15,8 +16,8 @@ export default function AdminLayout({
   const [mounted, setMounted] = useState(false);
 
   // Check if we're on the login or register page
-  const isLoginPage = pathname === '/admin/login';
-  const isRegisterPage = pathname === '/admin/register';
+  const isLoginPage = pathname === "/admin/login";
+  const isRegisterPage = pathname === "/admin/register";
   const isAuthPage = isLoginPage || isRegisterPage;
 
   useEffect(() => {
@@ -26,7 +27,7 @@ export default function AdminLayout({
   useEffect(() => {
     // Don't redirect if we're already on the login or register page
     if (mounted && !loading && !isAuthenticated && !isAuthPage) {
-      router.push('/admin/login');
+      router.push("/admin/login");
     }
   }, [isAuthenticated, loading, router, isAuthPage, mounted]);
 
@@ -48,5 +49,12 @@ export default function AdminLayout({
     return null;
   }
 
-  return <>{children}</>;
+  return (
+    <div className="min-h-screen bg-gray-50">
+      <AdminSidebar />
+      <main className="lg:ml-64 transition-all duration-300 min-h-screen pt-16 lg:pt-0">
+        <div className="p-4 lg:p-8">{children}</div>
+      </main>
+    </div>
+  );
 }

@@ -7,12 +7,12 @@ import { useCart } from "@/context/CartContext";
 import { FiPlus } from "react-icons/fi";
 import { motion } from "framer-motion";
 import toast from "react-hot-toast";
+import { useMenuItems } from "@/lib/hooks/useMenuItems";
 
 type CategoryType = "shawama" | "drinks" | "food" | "protein" | "all";
 
 interface MenuSectionProps {
   title: string;
-  items: MenuItem[];
 }
 
 const categoryLabels: Record<string, string> = {
@@ -29,10 +29,11 @@ const categoryColors: Record<string, string> = {
   protein: "bg-red-100 text-red-700 border-red-300",
 };
 
-export default function MenuSection({ title, items }: MenuSectionProps) {
+export default function MenuSection({ title }: MenuSectionProps) {
   const router = useRouter();
   const { addToCart, cart } = useCart();
   const [selectedCategory, setSelectedCategory] = useState<CategoryType>("all");
+  const { data: items = [], isLoading, error } = useMenuItems();
 
   const isItemInCart = (itemId?: string) => {
     return cart.some((cartItem) => cartItem._id === itemId);
@@ -50,6 +51,32 @@ export default function MenuSection({ title, items }: MenuSectionProps) {
     selectedCategory === "all"
       ? items
       : items.filter((item) => item.category === selectedCategory);
+
+  if (isLoading) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-12">
+            <p className="text-gray-600 text-lg">Loading menu...</p>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (error) {
+    return (
+      <section className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center py-12">
+            <p className="text-red-600 text-lg">
+              Error loading menu. Please try again later.
+            </p>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   if (items.length === 0) {
     return null;

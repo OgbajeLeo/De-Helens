@@ -7,9 +7,9 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint"
-   
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.90.16",
     "bcryptjs": "^2.4.3",
     "framer-motion": "^12.25.0",
     "mongodb": "^6.3.0",

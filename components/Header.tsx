@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { useCart } from '@/context/CartContext';
 import { FiShoppingCart, FiChevronDown } from 'react-icons/fi';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
+import logo from "../app/logo.png"
 
 export default function Header() {
   const { getItemCount } = useCart();
@@ -21,10 +23,9 @@ export default function Header() {
           <Link href="/" className="flex items-center gap-2">
             <motion.div
               whileHover={{ scale: 1.05 }}
-              className="text-3xl font-bold text-[#22c55e] flex items-center gap-2"
+              className="text-3xl font-bold text-[#22c55e] w-[80px] lg:w-[120px] flex items-center gap-2"
             >
-              <span>🍃</span>
-              <span>FOODI</span>
+              <Image src={logo} alt="De Helen's Taste" width={120} height={100} />
             </motion.div>
           </Link>
 
