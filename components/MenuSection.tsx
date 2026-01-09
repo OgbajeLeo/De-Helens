@@ -164,7 +164,7 @@ export default function MenuSection({ title }: MenuSectionProps) {
                     </div>
                   </div>
                 )}
-                <div className="p-6">
+                <div className="p-3 lg:p-6">
                   <h3 className="text-lg lg:text-xl font-semibold mb-2 text-gray-900">
                     {item.name}
                   </h3>

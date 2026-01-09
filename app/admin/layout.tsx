@@ -31,7 +31,6 @@ export default function AdminLayout({
     }
   }, [isAuthenticated, loading, router, isAuthPage, mounted]);
 
-  // If on login or register page, always show children (don't check auth)
   if (isAuthPage) {
     return <>{children}</>;
   }
