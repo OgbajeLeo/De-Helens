@@ -6,9 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint",
-    "create-admin": "node scripts/create-admin-user.js",
-    "create-admin:update": "node scripts/create-admin-user.js --update"
+    "lint": "eslint"
+   
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
