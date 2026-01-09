@@ -97,7 +97,8 @@ export default function Home() {
     {
       icon: <FiTruck className="text-3xl" />,
       title: "FAST DELIVERY",
-      description: "Quick and reliable delivery to your doorstep",
+      description:
+        "Quick and reliable delivery to your doorstep (Within Lokoja city)",
     },
     {
       icon: <FiShoppingBag className="text-3xl" />,
@@ -437,7 +438,7 @@ export default function Home() {
                       <FiStar className="text-yellow-400 fill-yellow-400" />
                       <span className="font-semibold">4.9</span>
                       <span className="text-gray-600 text-sm">
-                        (10.6k Reviews)
+                        (1.6k Reviews)
                       </span>
                     </div>
                   </div>

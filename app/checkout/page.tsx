@@ -110,7 +110,7 @@ export default function CheckoutPage() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
               </svg>
             </div>
-            <h1 className="text-4xl font-bold mb-4 text-gray-800">Order Placed Successfully!</h1>
+            <h1 className="text-2xl font-bold mb-4 text-gray-800">Order Placed Successfully!</h1>
             <p className="text-gray-600 mb-8">
               Your order has been sent via WhatsApp. We&apos;ll contact you soon to confirm your order.
             </p>
@@ -138,13 +138,18 @@ export default function CheckoutPage() {
           <FiArrowLeft />
           Back to Cart
         </Link>
-        <h1 className="text-4xl font-bold mb-8 text-gray-800">Checkout</h1>
+        <h1 className="text-2xl font-bold mb-8 text-gray-800">Checkout</h1>
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">Customer Information</h2>
+            <h2 className="text-xl lg:text-2xl font-bold mb-6 text-gray-800">
+              Customer Information
+            </h2>
             <form onSubmit={handleCheckout} className="space-y-4">
               <div>
-                <label htmlFor="name" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="name"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Full Name
                 </label>
                 <input
@@ -157,7 +162,10 @@ export default function CheckoutPage() {
                 />
               </div>
               <div>
-                <label htmlFor="phone" className="block text-sm font-semibold text-gray-700 mb-2">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-semibold text-gray-700 mb-2"
+                >
                   Phone Number
                 </label>
                 <input
@@ -179,15 +187,20 @@ export default function CheckoutPage() {
                 disabled={loading}
                 className="w-full bg-[#228B22] text-white py-3 rounded-lg text-lg font-semibold hover:bg-[#1a6b1a] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
-                {loading ? 'Processing...' : 'Complete Order via WhatsApp'}
+                {loading ? "Processing..." : "Complete Order via WhatsApp"}
               </button>
             </form>
           </div>
           <div className="bg-white rounded-lg shadow-md p-6">
-            <h2 className="text-2xl font-bold mb-6 text-gray-800">Order Summary</h2>
+            <h2 className="text-xl lg:text-2xl font-bold mb-6 text-gray-800">
+              Order Summary
+            </h2>
             <div className="space-y-3 mb-4">
               {cart.map((item) => (
-                <div key={item._id} className="flex items-center gap-3 pb-3 border-b border-gray-200 last:border-0">
+                <div
+                  key={item._id}
+                  className="flex items-center gap-3 pb-3 border-b border-gray-200 last:border-0"
+                >
                   {item.image ? (
                     <img
                       src={item.image}
@@ -203,14 +216,18 @@ export default function CheckoutPage() {
                     <p className="font-semibold text-gray-800">{item.name}</p>
                     <p className="text-sm text-gray-600">x{item.quantity}</p>
                   </div>
-                  <span className="font-semibold text-gray-800">₦{(item.price * item.quantity).toLocaleString()}</span>
+                  <span className="font-semibold text-gray-800">
+                    ₦{(item.price * item.quantity).toLocaleString()}
+                  </span>
                 </div>
               ))}
             </div>
             <div className="border-t border-gray-200 pt-4">
               <div className="flex justify-between text-2xl font-bold text-gray-800">
                 <span>Total:</span>
-                <span className="text-[#228B22]">₦{getTotal().toLocaleString()}</span>
+                <span className="text-[#228B22]">
+                  ₦{getTotal().toLocaleString()}
+                </span>
               </div>
             </div>
           </div>

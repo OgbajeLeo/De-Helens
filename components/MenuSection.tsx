@@ -121,7 +121,7 @@ export default function MenuSection({ title }: MenuSectionProps) {
             </p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredItems.map((item, index) => (
               <motion.div
                 key={item._id}
@@ -165,22 +165,22 @@ export default function MenuSection({ title }: MenuSectionProps) {
                   </div>
                 )}
                 <div className="p-6">
-                  <h3 className="text-xl font-semibold mb-2 text-gray-900">
+                  <h3 className="text-lg lg:text-xl font-semibold mb-2 text-gray-900">
                     {item.name}
                   </h3>
                   <p className="text-gray-600 mb-4 text-sm">
                     {item.description}
                   </p>
                   <div className="flex items-center justify-between mb-4">
-                    <span className="text-2xl font-bold text-[#22c55e]">
+                    <span className="text-xl lg:text-2xl font-bold text-[#22c55e]">
                       ₦{item.price.toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-col lg:flex-row gap-2">
                     {isItemInCart(item._id) ? (
                       <button
                         disabled
-                        className="flex-1 bg-gray-300 text-gray-600 px-4 py-2 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
+                        className="flex-1 text-sm lg:text-base bg-gray-300 text-gray-600 px-4 py-2 rounded-lg cursor-not-allowed flex items-center justify-center gap-2 font-semibold"
                       >
                         Added
                       </button>
@@ -192,7 +192,7 @@ export default function MenuSection({ title }: MenuSectionProps) {
                         }}
                         whileHover={{ scale: 1.05 }}
                         whileTap={{ scale: 0.95 }}
-                        className="flex-1 bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2 font-semibold"
+                        className="flex-1 text-sm lg:text-base bg-gray-100 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-200 transition flex items-center justify-center gap-2 font-semibold"
                       >
                         <FiPlus />
                         Add to Cart
@@ -207,7 +207,7 @@ export default function MenuSection({ title }: MenuSectionProps) {
                       }}
                       whileHover={{ scale: 1.05 }}
                       whileTap={{ scale: 0.95 }}
-                      className="flex-1 bg-[#22c55e] text-white px-4 py-2 rounded-lg hover:bg-[#16a34a] transition font-semibold"
+                      className="flex-1 bg-[#22c55e] text-sm lg:text-base text-white px-4 py-2 rounded-lg hover:bg-[#16a34a] transition font-semibold"
                     >
                       Order Now
                     </motion.button>

@@ -14,6 +14,8 @@ import {
   FiChevronLeft,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
+import logo from "../app/logo.png"
+import Image from "next/image";
 
 export default function AdminSidebar() {
   const pathname = usePathname();
@@ -61,11 +63,9 @@ export default function AdminSidebar() {
             initial={{ opacity: 0, x: -20 }}
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: 0.1 }}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 w-[80px] lg:w-[120px]"
           >
-            <h1 className="text-xl font-bold text-[#228B22]">
-              De Helen&apos;s Taste
-            </h1>
+            <Image src={logo} alt="De Helen's Taste" width={120} height={100} />
           </motion.div>
 
           {/* Hamburger Menu Button */}
@@ -99,7 +99,7 @@ export default function AdminSidebar() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMobileOpen(false)}
-              className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
+              className="lg:hidden fixed inset-0 bg-black/50 z-40"
             />
             <motion.div
               initial={{ x: -300 }}
@@ -108,7 +108,7 @@ export default function AdminSidebar() {
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
               className="lg:hidden fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-white shadow-xl z-50 overflow-y-auto"
             >
-              <div className="p-4 border-b">
+              <div className="p-4 border-b border-gray-300">
                 <div className="flex items-center justify-between mb-4">
                   <h2 className="text-xl font-bold text-[#228B22]">
                     Admin Panel
@@ -195,7 +195,7 @@ export default function AdminSidebar() {
         </nav>
 
         {/* Logout Button */}
-        <div className="p-4 border-t">
+        <div className="p-4 border-t border-gray-300">
           <button
             onClick={handleLogout}
             className={`w-full flex items-center gap-3 px-4 py-3 rounded-lg text-red-600 hover:bg-red-50 transition ${

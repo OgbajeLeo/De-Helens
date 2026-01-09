@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Poppins} from "next/font/google";
+import { Poppins } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
 
@@ -8,8 +8,6 @@ const poppins = Poppins({
   display: "swap",
   weight: ["300", "600"],
 });
-
-
 
 export const metadata: Metadata = {
   title: "De Helen's Taste - Restaurant",
@@ -24,9 +22,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${poppins.className} antialiased`}>
-        <Providers>
-          {children}
-        </Providers>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );
