@@ -21,8 +21,9 @@ export interface Order {
     price: number;
   }[];
   total: number;
-  status: 'pending' | 'confirmed' | 'completed' | 'cancelled';
+  status: 'pending' | 'confirmed' | 'completed' | 'delivered' | 'cancelled';
   createdAt?: Date;
+  updatedAt?: Date;
 }
 
 export interface Admin {

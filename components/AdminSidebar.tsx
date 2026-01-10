@@ -12,9 +12,10 @@ import {
   FiSettings,
   FiLogOut,
   FiChevronLeft,
+  FiShoppingBag,
 } from "react-icons/fi";
 import { motion, AnimatePresence } from "framer-motion";
-import logo from "../app/logo.png"
+import logo from "../app/logo.png";
 import Image from "next/image";
 
 export default function AdminSidebar() {
@@ -39,6 +40,11 @@ export default function AdminSidebar() {
       name: "Meals",
       icon: FiCoffee,
       path: "/admin/meals",
+    },
+    {
+      name: "Orders",
+      icon: FiShoppingBag,
+      path: "/admin/orders",
     },
     {
       name: "Settings",

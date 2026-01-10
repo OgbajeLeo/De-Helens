@@ -39,7 +39,14 @@ export async function GET() {
       .find({})
       .sort({ createdAt: -1 })
       .toArray();
-    return NextResponse.json(orders);
+    
+    // Convert ObjectId to string for JSON response
+    const ordersWithStringIds = orders.map(order => ({
+      ...order,
+      _id: order._id?.toString(),
+    }));
+    
+    return NextResponse.json(ordersWithStringIds);
   } catch (error) {
     console.error('Error fetching orders:', error);
     return NextResponse.json({ error: 'Failed to fetch orders' }, { status: 500 });
