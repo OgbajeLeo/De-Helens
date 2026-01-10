@@ -1,28 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import { MenuItem } from "@/lib/models";
 import { FiTrendingUp, FiPackage, FiDollarSign, FiUsers } from "react-icons/fi";
+import { useMenuItems } from "@/lib/hooks/useMenuItems";
 
 export default function AnalyticsPage() {
-  const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  const fetchData = async () => {
-    try {
-      const response = await fetch("/api/menu");
-      const data = await response.json();
-      setMenuItems(data);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { data: menuItems = [], isLoading: loading } = useMenuItems();
 
   const stats = {
     totalItems: menuItems.length,
@@ -161,7 +144,7 @@ export default function AnalyticsPage() {
               </tr>
             </thead>
             <tbody>
-              {menuItems.slice(0, 10).map((item) => (
+              {menuItems.slice(0, 4).map((item) => (
                 <tr key={item._id} className="border-b border-gray-100">
                   <td className="py-3 px-4 text-gray-800">{item.name}</td>
                   <td className="py-3 px-4">
