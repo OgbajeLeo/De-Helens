@@ -119,7 +119,7 @@ export default function AdminLoginPage() {
             {loading ? "Logging in..." : "Login"}
           </button>
         </form>
-        <div className="mt-6 text-center">
+        {/* <div className="mt-6 text-center">
           <p className="text-gray-600">
             Don&apos;t have an account?{" "}
             <Link
@@ -129,7 +129,7 @@ export default function AdminLoginPage() {
               Create one here
             </Link>
           </p>
-        </div>
+        </div> */}
       </div>
     </div>
   );

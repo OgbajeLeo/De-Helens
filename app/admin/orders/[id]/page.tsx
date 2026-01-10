@@ -15,7 +15,13 @@ export default function OrderDetailPage() {
   const updateStatusMutation = useUpdateOrderStatus();
   const [confirmModal, setConfirmModal] = useState<{
     isOpen: boolean;
-    newStatus: "pending" | "confirmed" | "completed" | "delivered" | "cancelled" | null;
+    newStatus:
+      | "pending"
+      | "confirmed"
+      | "completed"
+      | "delivered"
+      | "cancelled"
+      | null;
   }>({
     isOpen: false,
     newStatus: null,
@@ -81,9 +87,7 @@ export default function OrderDetailPage() {
       setConfirmModal({ isOpen: false, newStatus: null });
     } catch (error) {
       toast.error(
-        error instanceof Error
-          ? error.message
-          : "Failed to update order status"
+        error instanceof Error ? error.message : "Failed to update order status"
       );
     }
   };
@@ -92,7 +96,9 @@ export default function OrderDetailPage() {
     return status.charAt(0).toUpperCase() + status.slice(1);
   };
 
-  const getConfirmButtonColor = (status: string): "primary" | "danger" | "success" => {
+  const getConfirmButtonColor = (
+    status: string
+  ): "primary" | "danger" | "success" => {
     if (status === "cancelled") return "danger";
     if (status === "completed" || status === "delivered") return "success";
     return "primary";
@@ -129,7 +135,9 @@ export default function OrderDetailPage() {
       </button>
 
       <div className="mb-6">
-        <h2 className="text-xl font-medium text-gray-800 mb-2">Order Details</h2>
+        <h2 className="text-xl font-medium text-gray-800 mb-2">
+          Order Details
+        </h2>
         <p className="text-sm text-gray-500">Order ID: {order._id}</p>
       </div>
 
@@ -198,9 +206,9 @@ export default function OrderDetailPage() {
               )}
             </div>
             <div>
-              <p className="text-xs text-gray-500">Total Amount</p>
-              <p className="text-lg font-bold text-[#228B22]">
-                ₦{order.total?.toLocaleString() || "0"}
+              <p className="text-xs text-gray-500">Delivery Type</p>
+              <p className="text-sm font-medium text-gray-800">
+                {order.deliveryType === "delivery" ? "Delivery" : "Shop Pickup"}
               </p>
             </div>
             <div>
@@ -212,6 +220,43 @@ export default function OrderDetailPage() {
           </div>
         </div>
       </div>
+
+      {/* Delivery Information */}
+      {order.deliveryType === "delivery" &&
+        (order.deliveryAddress || order.landmark || order.deliveryFee) && (
+          <div className="bg-gray-50 rounded-lg p-4 border border-gray-200 mb-6">
+            <h3 className="text-sm font-semibold text-gray-700 mb-3 uppercase">
+              Delivery Information
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {order.deliveryAddress && (
+                <div>
+                  <p className="text-xs text-gray-500">Delivery Address</p>
+                  <p className="text-sm font-medium text-gray-800 mt-1">
+                    {order.deliveryAddress}
+                  </p>
+                </div>
+              )}
+              {order.landmark && (
+                <div>
+                  <p className="text-xs text-gray-500">Closest Landmark</p>
+                  <p className="text-sm font-medium text-gray-800 mt-1">
+                    {order.landmark}
+                  </p>
+                </div>
+              )}
+              {order.deliveryFee !== undefined &&
+                order.deliveryFee !== null && (
+                  <div>
+                    <p className="text-xs text-gray-500">Delivery Fee</p>
+                    <p className="text-sm font-medium text-[#228B22] mt-1">
+                      ₦{order.deliveryFee.toLocaleString()}
+                    </p>
+                  </div>
+                )}
+            </div>
+          </div>
+        )}
 
       {/* Order Items */}
       <div className="mb-6">
@@ -252,12 +297,45 @@ export default function OrderDetailPage() {
                     ₦{item.price?.toLocaleString() || "0"}
                   </td>
                   <td className="py-3 px-4 text-sm font-medium text-gray-800">
-                    ₦{((item.price || 0) * (item.quantity || 0)).toLocaleString()}
+                    ₦
+                    {(
+                      (item.price || 0) * (item.quantity || 0)
+                    ).toLocaleString()}
                   </td>
                 </tr>
               ))}
             </tbody>
             <tfoot>
+              <tr className="border-t border-gray-200">
+                <td
+                  colSpan={3}
+                  className="py-2 px-4 text-sm text-gray-600 text-right"
+                >
+                  Subtotal:
+                </td>
+                <td className="py-2 px-4 text-sm font-medium text-gray-700">
+                  ₦
+                  {order.subtotal?.toLocaleString() ||
+                    order.total?.toLocaleString() ||
+                    "0"}
+                </td>
+              </tr>
+              {order.deliveryType === "delivery" &&
+                order.deliveryFee !== undefined &&
+                order.deliveryFee !== null &&
+                order.deliveryFee > 0 && (
+                  <tr className="border-t border-gray-200">
+                    <td
+                      colSpan={3}
+                      className="py-2 px-4 text-sm text-gray-600 text-right"
+                    >
+                      Delivery Fee:
+                    </td>
+                    <td className="py-2 px-4 text-sm font-medium text-gray-700">
+                      ₦{order.deliveryFee.toLocaleString()}
+                    </td>
+                  </tr>
+                )}
               <tr className="border-t-2 border-gray-300">
                 <td
                   colSpan={3}
@@ -277,9 +355,7 @@ export default function OrderDetailPage() {
       {/* Confirmation Modal */}
       <ConfirmationModal
         isOpen={confirmModal.isOpen}
-        onClose={() =>
-          setConfirmModal({ isOpen: false, newStatus: null })
-        }
+        onClose={() => setConfirmModal({ isOpen: false, newStatus: null })}
         onConfirm={handleConfirmStatusUpdate}
         title="Update Order Status"
         message={
@@ -289,7 +365,11 @@ export default function OrderDetailPage() {
               )}"?`
             : "Are you sure you want to update this order status?"
         }
-        confirmText={confirmModal.newStatus ? `Update to ${getStatusLabel(confirmModal.newStatus)}` : "Confirm"}
+        confirmText={
+          confirmModal.newStatus
+            ? `Update to ${getStatusLabel(confirmModal.newStatus)}`
+            : "Confirm"
+        }
         cancelText="Cancel"
         confirmButtonColor={
           confirmModal.newStatus

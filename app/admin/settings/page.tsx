@@ -1,8 +1,23 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { FiSave, FiBell, FiShield, FiGlobe, FiDollarSign } from "react-icons/fi";
+import {
+  FiSave,
+  FiBell,
+  FiShield,
+  FiGlobe,
+  FiDollarSign,
+  FiTruck,
+  FiPlus,
+  FiX,
+} from "react-icons/fi";
 import toast from "react-hot-toast";
+
+interface DeliveryZone {
+  name: string;
+  landmarks: string[];
+  fee: number;
+}
 
 export default function SettingsPage() {
   const [loading, setLoading] = useState(true);
@@ -16,6 +31,7 @@ export default function SettingsPage() {
     taxRate: 0,
     enableNotifications: true,
     enableEmailAlerts: false,
+    deliveryZones: [] as DeliveryZone[],
   });
 
   useEffect(() => {
@@ -72,14 +88,18 @@ export default function SettingsPage() {
     <div className="space-y-4">
       <div>
         <h1 className="text-xl font-medium text-gray-800 mb-1">Settings</h1>
-        <p className="text-sm text-gray-500">Manage your restaurant settings and preferences</p>
+        <p className="text-sm text-gray-500">
+          Manage your restaurant settings and preferences
+        </p>
       </div>
 
       {/* General Settings */}
       <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
         <div className="flex items-center gap-2 mb-4">
           <FiGlobe className="text-lg text-[#228B22]" />
-          <h2 className="text-base font-medium text-gray-800">General Settings</h2>
+          <h2 className="text-base font-medium text-gray-800">
+            General Settings
+          </h2>
         </div>
         <div className="space-y-3">
           <div>
@@ -143,7 +163,9 @@ export default function SettingsPage() {
       <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
         <div className="flex items-center gap-2 mb-4">
           <FiDollarSign className="text-lg text-[#228B22]" />
-          <h2 className="text-base font-medium text-gray-800">Business Settings</h2>
+          <h2 className="text-base font-medium text-gray-800">
+            Business Settings
+          </h2>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
@@ -167,20 +189,178 @@ export default function SettingsPage() {
               Tax Rate (%)
             </label>
             <input
-              type="number"
-              min="0"
-              max="100"
-              step="0.1"
-              value={settings.taxRate}
-              onChange={(e) =>
-                setSettings({
-                  ...settings,
-                  taxRate: parseFloat(e.target.value) || 0,
-                })
-              }
+              type="text"
+              inputMode="decimal"
+              value={settings.taxRate === 0 ? "" : settings.taxRate}
+              onChange={(e) => {
+                const value = e.target.value;
+                // Allow empty string, otherwise parse as number
+                if (value === "") {
+                  setSettings({ ...settings, taxRate: 0 });
+                } else {
+                  const numValue = parseFloat(value);
+                  if (!isNaN(numValue) && numValue >= 0 && numValue <= 100) {
+                    setSettings({ ...settings, taxRate: numValue });
+                  }
+                }
+              }}
+              onBlur={(e) => {
+                const value = e.target.value.trim();
+                if (value === "") {
+                  setSettings({ ...settings, taxRate: 0 });
+                } else {
+                  const numValue = parseFloat(value);
+                  const clampedValue = Math.max(
+                    0,
+                    Math.min(100, isNaN(numValue) ? 0 : numValue)
+                  );
+                  setSettings({ ...settings, taxRate: clampedValue });
+                }
+              }}
+              placeholder="0"
               className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent"
             />
           </div>
+        </div>
+      </div>
+
+      {/* Delivery Zones Settings */}
+      <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-2">
+            <FiTruck className="text-lg text-[#228B22]" />
+            <h2 className="text-base font-medium text-gray-800">
+              Delivery Zones & Fees
+            </h2>
+          </div>
+          <button
+            onClick={() => {
+              setSettings({
+                ...settings,
+                deliveryZones: [
+                  ...settings.deliveryZones,
+                  { name: "", landmarks: [], fee: 0 },
+                ],
+              });
+            }}
+            className="flex items-center gap-1 text-sm text-[#228B22] hover:text-[#1a6b1a] transition"
+          >
+            <FiPlus className="text-sm" />
+            Add Zone
+          </button>
+        </div>
+        <div className="space-y-4">
+          {(settings.deliveryZones || []).map((zone, index) => (
+            <div
+              key={index}
+              className="p-3 border border-gray-200 rounded-lg space-y-3"
+            >
+              <div className="flex items-center justify-between">
+                <h3 className="text-sm font-medium text-gray-700">
+                  Zone {index + 1}
+                </h3>
+                <button
+                  onClick={() => {
+                    const updatedZones = settings.deliveryZones.filter(
+                      (_, i) => i !== index
+                    );
+                    setSettings({ ...settings, deliveryZones: updatedZones });
+                  }}
+                  className="text-red-500 hover:text-red-700 transition"
+                >
+                  <FiX className="text-sm" />
+                </button>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Zone Name
+                </label>
+                <input
+                  type="text"
+                  value={zone.name}
+                  onChange={(e) => {
+                    const updatedZones = [...settings.deliveryZones];
+                    updatedZones[index].name = e.target.value;
+                    setSettings({ ...settings, deliveryZones: updatedZones });
+                  }}
+                  placeholder="e.g., Zone 8, Phase II"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Landmarks (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  value={zone.landmarks.join(", ")}
+                  onChange={(e) => {
+                    const updatedZones = [...settings.deliveryZones];
+                    updatedZones[index].landmarks = e.target.value
+                      .split(",")
+                      .map((l) => l.trim())
+                      .filter((l) => l.length > 0);
+                    setSettings({ ...settings, deliveryZones: updatedZones });
+                  }}
+                  placeholder="e.g., Zone 8, Phase II, Phase 2"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Enter landmarks separated by commas. During checkout,
+                  customers will select one of these landmarks from a dropdown,
+                  and the system will automatically apply this zone's delivery
+                  fee. You can add multiple landmarks (e.g., "Zone 8, Phase II,
+                  Phase 2") for the same zone - customers only need to match
+                  one.
+                </p>
+              </div>
+              <div>
+                <label className="block text-xs font-medium text-gray-600 mb-1">
+                  Delivery Fee (₦)
+                </label>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
+                  value={zone.fee || ""}
+                  onChange={(e) => {
+                    const updatedZones = [...settings.deliveryZones];
+                    const value = e.target.value;
+                    // Allow empty string, otherwise parse as number
+                    if (value === "") {
+                      updatedZones[index].fee = 0;
+                    } else {
+                      const numValue = parseFloat(value);
+                      if (!isNaN(numValue) && numValue >= 0) {
+                        updatedZones[index].fee = numValue;
+                      }
+                    }
+                    setSettings({ ...settings, deliveryZones: updatedZones });
+                  }}
+                  onBlur={(e) => {
+                    // Ensure it's always a valid number on blur
+                    const updatedZones = [...settings.deliveryZones];
+                    const value = e.target.value.trim();
+                    if (value === "") {
+                      updatedZones[index].fee = 0;
+                    } else {
+                      const numValue = parseFloat(value);
+                      updatedZones[index].fee =
+                        isNaN(numValue) || numValue < 0 ? 0 : numValue;
+                    }
+                    setSettings({ ...settings, deliveryZones: updatedZones });
+                  }}
+                  placeholder="0"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent"
+                />
+              </div>
+            </div>
+          ))}
+          {settings.deliveryZones.length === 0 && (
+            <p className="text-sm text-gray-500 text-center py-4">
+              No delivery zones configured. Click "Add Zone" to add one.
+            </p>
+          )}
         </div>
       </div>
 
@@ -193,7 +373,9 @@ export default function SettingsPage() {
         <div className="space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-800">Enable Notifications</p>
+              <p className="text-sm font-medium text-gray-800">
+                Enable Notifications
+              </p>
               <p className="text-xs text-gray-500">
                 Receive notifications for new orders
               </p>

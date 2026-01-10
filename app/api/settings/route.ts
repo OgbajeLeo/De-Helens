@@ -1,6 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import clientPromise from '@/lib/mongodb';
 
+export interface DeliveryZone {
+  name: string;
+  landmarks: string[];
+  fee: number;
+}
+
 export interface Settings {
   _id?: string;
   restaurantName: string;
@@ -11,6 +17,7 @@ export interface Settings {
   taxRate: number;
   enableNotifications: boolean;
   enableEmailAlerts: boolean;
+  deliveryZones: DeliveryZone[];
   updatedAt?: Date;
 }
 
@@ -33,12 +40,25 @@ export async function GET() {
         taxRate: 0,
         enableNotifications: true,
         enableEmailAlerts: false,
+        deliveryZones: [
+          {
+            name: "Zone 8, Phase II",
+            landmarks: ["Zone 8", "Phase II", "Phase 2"],
+            fee: 500,
+          },
+          {
+            name: "Crusher, Zango, Ganaja Junction Beyond",
+            landmarks: ["Crusher", "Zango", "Ganaja", "Ganaja Junction"],
+            fee: 1000,
+          },
+        ],
       });
     }
     
     return NextResponse.json({
       ...settings,
       _id: settings._id?.toString(),
+      deliveryZones: settings.deliveryZones || [],
     });
   } catch (error: any) {
     console.error('Error fetching settings:', error);
@@ -61,6 +81,7 @@ export async function POST(request: NextRequest) {
       taxRate,
       enableNotifications,
       enableEmailAlerts,
+      deliveryZones,
     } = body;
 
     const client = await clientPromise;
@@ -75,6 +96,18 @@ export async function POST(request: NextRequest) {
       taxRate: taxRate || 0,
       enableNotifications: enableNotifications !== false,
       enableEmailAlerts: enableEmailAlerts || false,
+      deliveryZones: deliveryZones || [
+        {
+          name: "Zone 8, Phase II",
+          landmarks: ["Zone 8", "Phase II", "Phase 2"],
+          fee: 500,
+        },
+        {
+          name: "Crusher, Zango, Ganaja Junction Beyond",
+          landmarks: ["Crusher", "Zango", "Ganaja", "Ganaja Junction"],
+          fee: 1000,
+        },
+      ],
       updatedAt: new Date(),
     };
 

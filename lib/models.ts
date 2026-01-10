@@ -20,6 +20,11 @@ export interface Order {
     quantity: number;
     price: number;
   }[];
+  deliveryType: 'pickup' | 'delivery';
+  deliveryAddress?: string;
+  landmark?: string;
+  deliveryFee?: number;
+  subtotal: number;
   total: number;
   status: 'pending' | 'confirmed' | 'completed' | 'delivered' | 'cancelled';
   createdAt?: Date;

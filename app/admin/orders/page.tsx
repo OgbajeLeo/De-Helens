@@ -146,6 +146,9 @@ export default function OrdersPage() {
                     Phone
                   </th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">
+                    Type
+                  </th>
+                  <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">
                     Items
                   </th>
                   <th className="text-left py-3 px-4 text-xs font-semibold text-gray-600 uppercase">
@@ -177,6 +180,19 @@ export default function OrdersPage() {
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-700">
                       {order.customerPhone}
+                    </td>
+                    <td className="py-3 px-4 text-sm text-gray-700">
+                      <span
+                        className={`inline-flex px-2 py-1 text-xs font-semibold rounded-full ${
+                          order.deliveryType === "delivery"
+                            ? "bg-blue-100 text-blue-800"
+                            : "bg-gray-100 text-gray-800"
+                        }`}
+                      >
+                        {order.deliveryType === "delivery"
+                          ? "Delivery"
+                          : "Pickup"}
+                      </span>
                     </td>
                     <td className="py-3 px-4 text-sm text-gray-700">
                       {order.items?.length || 0} item(s)

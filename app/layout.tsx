@@ -11,7 +11,34 @@ const poppins = Poppins({
 
 export const metadata: Metadata = {
   title: "De Helen's Taste - Restaurant",
-  description: "Delicious meals and drinks at De Helen's Taste",
+  description:
+    "Experience exceptional culinary delights at De Helen's Taste. Order delicious shawarma, protein dishes, drinks, and more. Fast delivery within Lokoja city. Quality food crafted with passion and culinary mastery.",
+  icons: {
+    icon: "/logo.png",
+    shortcut: "/logo.png",
+    apple: "/logo.png",
+  },
+  openGraph: {
+    title: "De Helen's Taste - Restaurant",
+    description:
+      "Experience exceptional culinary delights at De Helen's Taste. Order delicious shawarma, protein dishes, drinks, and more. Fast delivery within Lokoja city.",
+    type: "website",
+    images: [
+      {
+        url: "/logo.png",
+        width: 1200,
+        height: 630,
+        alt: "De Helen's Taste Logo",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "De Helen's Taste - Restaurant",
+    description:
+      "Experience exceptional culinary delights at De Helen's Taste. Order delicious shawarma, protein dishes, drinks, and more.",
+    images: ["/logo.png"],
+  },
 };
 
 export default function RootLayout({
