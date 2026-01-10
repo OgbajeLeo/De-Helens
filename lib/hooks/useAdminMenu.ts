@@ -18,7 +18,7 @@ const createMenuItem = async (formData: {
   name: string;
   description: string;
   price: string;
-  category: "shawama" | "drinks" | "food" | "protein";
+  category: "shawarma" | "drinks" | "food" | "protein";
   image: string;
   available: boolean;
 }): Promise<MenuItem> => {

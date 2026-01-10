@@ -68,10 +68,10 @@ export default function Home() {
 
   const categories = [
     {
-      name: "Shawama",
+      name: "Shawarma",
       icon: "🌯",
-      count: getCategoryCount("shawama"),
-      id: "shawama",
+      count: getCategoryCount("shawarma"),
+      id: "shawarma",
     },
     {
       name: "Drinks",

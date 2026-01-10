@@ -12,7 +12,7 @@ import {
   useUploadImage,
 } from "@/lib/hooks/useAdminMenu";
 
-type CategoryFilter = "All" | "shawama" | "drinks" | "food" | "protein";
+type CategoryFilter = "All" | "shawarma" | "drinks" | "food" | "protein";
 
 export default function MealsPage() {
   const router = useRouter();
@@ -34,7 +34,7 @@ export default function MealsPage() {
     name: "",
     description: "",
     price: "",
-    category: "food" as "shawama" | "drinks" | "food" | "protein",
+    category: "food" as "shawarma" | "drinks" | "food" | "protein",
     image: "",
     available: true,
   });
@@ -122,7 +122,7 @@ export default function MealsPage() {
 
   const categories: { value: CategoryFilter; label: string }[] = [
     { value: "All", label: "All Categories" },
-    { value: "shawama", label: "Shawama" },
+    { value: "shawarma", label: "Shawarma" },
     { value: "drinks", label: "Drinks" },
     { value: "food", label: "Food" },
     { value: "protein", label: "Protein" },
@@ -225,7 +225,7 @@ export default function MealsPage() {
                   setFormData({
                     ...formData,
                     category: e.target.value as
-                      | "shawama"
+                      | "shawarma"
                       | "drinks"
                       | "food"
                       | "protein",
@@ -233,7 +233,7 @@ export default function MealsPage() {
                 }
                 className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent"
               >
-                <option value="shawama">Shawama</option>
+                <option value="shawarma">Shawarma</option>
                 <option value="drinks">Drinks</option>
                 <option value="food">Food</option>
                 <option value="protein">Protein</option>

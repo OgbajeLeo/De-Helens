@@ -20,7 +20,7 @@ export default function EditMenuItemPage() {
     name: "",
     description: "",
     price: "",
-    category: "food" as "shawama" | "drinks" | "food" | "protein",
+    category: "food" as "shawarma" | "drinks" | "food" | "protein",
     image: "",
     available: true,
   });
@@ -220,12 +220,16 @@ export default function EditMenuItemPage() {
                   onChange={(e) =>
                     setFormData({
                       ...formData,
-                      category: e.target.value as "shawama" | "drinks" | "food" | "protein",
+                      category: e.target.value as
+                        | "shawarma"
+                        | "drinks"
+                        | "food"
+                        | "protein",
                     })
                   }
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#228B22] focus:border-transparent"
                 >
-                  <option value="shawama">Shawama</option>
+                  <option value="shawarma">Shawarma</option>
                   <option value="drinks">Drinks</option>
                   <option value="food">Food</option>
                   <option value="protein">Protein</option>
