@@ -31,7 +31,9 @@ export default function AnalyticsPage() {
     <div className="space-y-6">
       <div>
         <h1 className="text-3xl font-bold text-gray-800 mb-2">Analytics</h1>
-        <p className="text-gray-600">Overview of your menu and business metrics</p>
+        <p className="text-gray-600">
+          Overview of your menu and business metrics
+        </p>
       </div>
 
       {/* Stats Cards */}
@@ -40,7 +42,9 @@ export default function AnalyticsPage() {
           <div className="flex items-center justify-between">
             <div>
               <p className="text-sm text-gray-600 mb-1">Total Items</p>
-              <p className="text-3xl font-bold text-gray-800">{stats.totalItems}</p>
+              <p className="text-3xl font-bold text-gray-800">
+                {stats.totalItems}
+              </p>
             </div>
             <div className="p-3 bg-blue-100 rounded-lg">
               <FiPackage className="text-2xl text-blue-600" />

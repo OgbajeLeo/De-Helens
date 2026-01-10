@@ -4,13 +4,15 @@ import { useState, useEffect } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { MenuItem } from "@/lib/models";
-import { FiArrowLeft } from "react-icons/fi";
+import { FiArrowLeft, FiTrash2 } from "react-icons/fi";
 import toast from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function EditMenuItemPage() {
   const router = useRouter();
   const params = useParams();
   const { logout } = useAuth();
+  const queryClient = useQueryClient();
   const itemId = params.id as string;
 
   const [loading, setLoading] = useState(true);
@@ -119,7 +121,11 @@ export default function EditMenuItemPage() {
 
       if (response.ok) {
         toast.success("Menu item updated successfully!");
-        router.push("/admin");
+        // Invalidate queries to refresh the menu list
+        queryClient.invalidateQueries({ queryKey: ["menuItems", "admin"] });
+        queryClient.invalidateQueries({ queryKey: ["menuItems"] });
+        // Navigate to meals page to see the updated list
+        router.push("/admin/meals");
       } else {
         const error = await response.json();
         toast.error(error.error || "Failed to update item");
@@ -297,15 +303,31 @@ export default function EditMenuItemPage() {
                 </div>
                 {/* Image Preview */}
                 {(imagePreview || formData.image) && (
-                  <div className="mt-2">
-                    <img
-                      src={imagePreview || formData.image}
-                      alt="Preview"
-                      className="w-full h-48 object-cover rounded border border-gray-300"
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).style.display = "none";
-                      }}
-                    />
+                  <div className="mt-4">
+                    <p className="text-sm font-medium text-gray-700 mb-2">
+                      Image Preview:
+                    </p>
+                    <div className="relative rounded-lg border border-gray-300 overflow-hidden bg-gray-50">
+                      <img
+                        src={imagePreview || formData.image}
+                        alt="Preview"
+                        className="w-full h-64 object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = "none";
+                        }}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setImagePreview("");
+                          setFormData((prev) => ({ ...prev, image: "" }));
+                        }}
+                        className="absolute top-2 right-2 bg-red-600 text-white p-2 rounded-full hover:bg-red-700 transition-colors shadow-lg"
+                        title="Remove image"
+                      >
+                        <FiTrash2 className="h-4 w-4" />
+                      </button>
+                    </div>
                   </div>
                 )}
               </div>

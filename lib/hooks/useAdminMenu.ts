@@ -71,16 +71,9 @@ const uploadImage = async (file: File): Promise<string> => {
     throw new Error("No URL returned from server");
   }
 
-  // Construct absolute URL for production
-  const baseUrl =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : "https://de-helens.vercel.app";
-  const imageUrl = data.url.startsWith("http")
-    ? data.url
-    : `${baseUrl}${data.url}`;
-
-  return imageUrl;
+  // Cloudinary returns a full URL (https://res.cloudinary.com/...)
+  // So we can return it directly
+  return data.url;
 };
 
 export const useAdminMenuItems = () => {
